@@ -6,12 +6,12 @@
 - name: kubeadm initiation
   command: >
     kubeadm init
-    --pod-network-cidr=192.168.0.0/16
+    --pod-network-cidr=10.0.0.0/16
     --apiserver-advertise-address={{ ansible_host }}
   when: not kube_init_check.stat.exists
   register: kubeadm_init_output
 
-  - name: .kube directory creation (root home)
+- name: .kube directory creation (root home)
   file:
     path: ~/.kube
     state: directory
@@ -27,14 +27,15 @@
     mode: '0600'
 
 - name: Calico network plugin application
-  become: false
+  become: true
   command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.7/manifests/calico.yaml
   when: not kube_init_check.stat.exists
 
 - name: Create join command for worker nodes
+  become: true
   command: kubeadm token create --print-join-command
   register: join_command_raw
-  when: inventory_hostname == groups['masters'][0]
+  when: inventory_hostname == groups['master'][0]
 
 - name: declare join command as a fact for worker nodes
   set_fact:
@@ -42,4 +43,4 @@
   delegate_to: "{{ item }}"
   delegate_facts: true
   with_items: "{{ groups['all'] }}"
-  when: inventory_hostname == groups['masters'][0]
+  when: inventory_hostname == groups['master'][0]
