@@ -11,15 +11,11 @@
   hosts: masters
   become: yes
   roles:
-    - k8s
-  vars:
-    is_master: true
-
+    - k8s_master
+ 
 # 3. Worker nodes specific tasks
 - name: worker node configuration
   hosts: workers
   become: yes
   roles:
-    - k8s
-  vars:
-    is_master: false
+    - k8s_worker

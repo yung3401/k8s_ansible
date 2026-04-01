@@ -1,4 +1,5 @@
-Initialize k8s cluster operating in Ubuntu 24.04
+Initialize k8s cluster operating in Linux (Ubuntu or RHEL)
 
 STEP
 1. Set up hosts.ini
+2. Please modify the file in Kubernetes version set ./roles/common/vars/main.yml
